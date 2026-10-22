@@ -1,17 +1,13 @@
+const http = require('http');
 
-const http = require("node:http");
+// Request handler kept separate from server start so it can be tested easily
+const handler = (req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok' }));
+  }
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello from nodejs-demo-app! CI/CD pipeline is working.\n');
+};
 
-const PORT = process.env.PORT || 3000;
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("Hello! My Node.js app is running through CI/CD.\n");
-});
-
-if (require.main === module) {
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-module.exports = server;
+module.exports = { handler, server: http.createServer(handler) };
